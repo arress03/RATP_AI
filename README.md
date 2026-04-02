@@ -1,8 +1,8 @@
-# Metro Disruption Predictor
+# RATP_AI
 
 Prédiction en temps réel des perturbations du métro parisien par ligne, alimentée par un modèle ML entraîné sur l'historique de l'API PRIM (Île-de-France Mobilités).
 
-Dashboard live : **[https://metro-disruption-predictor.vercel.app](https://metro-disruption-predictor.vercel.app)** *(à venir)*
+Dashboard live : **[https://ratp-ai.vercel.app](https://ratp-ai.vercel.app)** *(à venir)*
 
 ---
 
@@ -75,8 +75,8 @@ Dashboard live : **[https://metro-disruption-predictor.vercel.app](https://metro
 
 ```bash
 # Cloner le repo
-git clone https://github.com/<your-username>/metro-disruption-predictor.git
-cd metro-disruption-predictor
+git clone https://github.com/<your-username>/RATP_AI.git
+cd RATP_AI
 
 # Installer les dépendances
 make install
@@ -136,7 +136,7 @@ cd app && npm run dev
 ## Structure du projet
 
 ```
-metro-disruption-predictor/
+RATP_AI/
 ├── .github/workflows/ci.yml   # CI GitHub Actions
 ├── data/
 │   └── samples/               # Snapshot exemple pour les tests

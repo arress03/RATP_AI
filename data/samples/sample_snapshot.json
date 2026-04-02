@@ -1,0 +1,77 @@
+{
+  "fetched_at": "2026-04-01T08:05:00+00:00",
+  "metro_calls": [
+    {
+      "line": "1",
+      "stop": "STIF:StopPoint:Q:22104:",
+      "departure_status": "onTime",
+      "arrival_status": "onTime",
+      "is_delayed": false,
+      "expected_departure": "2026-04-01T08:06:30+00:00",
+      "aimed_departure": "2026-04-01T08:06:30+00:00"
+    },
+    {
+      "line": "1",
+      "stop": "STIF:StopPoint:Q:22105:",
+      "departure_status": "delayed",
+      "arrival_status": "delayed",
+      "is_delayed": true,
+      "expected_departure": "2026-04-01T08:09:45+00:00",
+      "aimed_departure": "2026-04-01T08:08:00+00:00"
+    },
+    {
+      "line": "1",
+      "stop": "STIF:StopPoint:Q:22106:",
+      "departure_status": "onTime",
+      "arrival_status": "onTime",
+      "is_delayed": false,
+      "expected_departure": "2026-04-01T08:12:00+00:00",
+      "aimed_departure": "2026-04-01T08:12:00+00:00"
+    },
+    {
+      "line": "4",
+      "stop": "STIF:StopPoint:Q:22200:",
+      "departure_status": "onTime",
+      "arrival_status": "onTime",
+      "is_delayed": false,
+      "expected_departure": "2026-04-01T08:07:00+00:00",
+      "aimed_departure": "2026-04-01T08:07:00+00:00"
+    },
+    {
+      "line": "4",
+      "stop": "STIF:StopPoint:Q:22201:",
+      "departure_status": "delayed",
+      "arrival_status": "delayed",
+      "is_delayed": true,
+      "expected_departure": "2026-04-01T08:11:20+00:00",
+      "aimed_departure": "2026-04-01T08:09:00+00:00"
+    },
+    {
+      "line": "13",
+      "stop": "STIF:StopPoint:Q:22400:",
+      "departure_status": "onTime",
+      "arrival_status": "onTime",
+      "is_delayed": false,
+      "expected_departure": "2026-04-01T08:08:00+00:00",
+      "aimed_departure": "2026-04-01T08:08:00+00:00"
+    },
+    {
+      "line": "13",
+      "stop": "STIF:StopPoint:Q:22401:",
+      "departure_status": "onTime",
+      "arrival_status": "onTime",
+      "is_delayed": false,
+      "expected_departure": "2026-04-01T08:10:30+00:00",
+      "aimed_departure": "2026-04-01T08:10:30+00:00"
+    },
+    {
+      "line": "13",
+      "stop": "STIF:StopPoint:Q:22402:",
+      "departure_status": "delayed",
+      "arrival_status": "delayed",
+      "is_delayed": true,
+      "expected_departure": "2026-04-01T08:15:00+00:00",
+      "aimed_departure": "2026-04-01T08:13:00+00:00"
+    }
+  ]
+}

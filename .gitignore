@@ -1,0 +1,12 @@
+data/raw/
+data/processed/
+.env
+__pycache__/
+*.pyc
+.DS_Store
+venv/
+.venv/
+*.pkl
+*.joblib
+node_modules/
+.next/

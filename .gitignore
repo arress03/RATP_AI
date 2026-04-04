@@ -10,3 +10,4 @@ venv/
 *.joblib
 node_modules/
 .next/
+.claude

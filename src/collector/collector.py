@@ -5,9 +5,11 @@
 
 import json
 import os
+import time
 from datetime import datetime, timezone
 
 import requests
+import schedule
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -75,9 +77,6 @@ def save_snapshot(snapshot: dict) -> str:
 
 
 def run():
-    import schedule
-    import time
-
     def job():
         print(f"\n[{datetime.now(timezone.utc).isoformat()}] Collecte en cours...")
         snapshot = collect_snapshot()

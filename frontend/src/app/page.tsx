@@ -3,24 +3,25 @@
 import { useState } from "react";
 import LineCard from "@/components/LineCard";
 import LastUpdate from "@/components/LastUpdate";
-import { MOCK_PREDICTIONS } from "@/lib/mock";
+import { usePredictions } from "@/hooks/usePredictions";
 import { RiskLevel, RISK_CONFIG } from "@/lib/lines";
 
 const RISK_ORDER: RiskLevel[] = ["high", "medium", "low"];
 
 export default function DashboardPage() {
+  const { predictions, updatedAt, loading, error, refresh } = usePredictions();
   const [filter, setFilter] = useState<RiskLevel | "all">("all");
 
-  const predictions = MOCK_PREDICTIONS.slice().sort(
+  const sorted = predictions.slice().sort(
     (a, b) => RISK_ORDER.indexOf(a.risk_level) - RISK_ORDER.indexOf(b.risk_level),
   );
 
-  const filtered = filter === "all" ? predictions : predictions.filter((p) => p.risk_level === filter);
+  const filtered = filter === "all" ? sorted : sorted.filter((p) => p.risk_level === filter);
 
   const counts = {
-    high:   predictions.filter((p) => p.risk_level === "high").length,
-    medium: predictions.filter((p) => p.risk_level === "medium").length,
-    low:    predictions.filter((p) => p.risk_level === "low").length,
+    high:   sorted.filter((p) => p.risk_level === "high").length,
+    medium: sorted.filter((p) => p.risk_level === "medium").length,
+    low:    sorted.filter((p) => p.risk_level === "low").length,
   };
 
   return (
@@ -32,7 +33,16 @@ export default function DashboardPage() {
             <h1 className="text-2xl font-bold tracking-tight">RATP AI</h1>
             <p className="text-sm text-[--muted] mt-0.5">Prévision des perturbations — 30 min</p>
           </div>
-          <LastUpdate updatedAt={new Date()} />
+          <div className="flex items-center gap-3">
+            <LastUpdate updatedAt={updatedAt} />
+            <button
+              onClick={refresh}
+              className="text-xs px-2 py-1 rounded bg-[--surface-2] text-[--muted] hover:text-[--foreground] transition-colors"
+              aria-label="Rafraîchir"
+            >
+              ↻
+            </button>
+          </div>
         </div>
 
         {/* Résumé risques */}
@@ -41,13 +51,20 @@ export default function DashboardPage() {
             const { label, bg, text } = RISK_CONFIG[level];
             return (
               <div key={level} className={`rounded-lg p-3 text-center ${bg}`}>
-                <p className={`text-2xl font-bold ${text}`}>{counts[level]}</p>
+                <p className={`text-2xl font-bold ${text}`}>{loading ? "—" : counts[level]}</p>
                 <p className={`text-xs mt-0.5 ${text} opacity-80`}>{label}</p>
               </div>
             );
           })}
         </div>
       </header>
+
+      {/* Erreur API */}
+      {error && (
+        <div className="mb-4 rounded-lg px-4 py-3 bg-red-900/40 border border-red-700/50 text-red-300 text-sm">
+          Impossible de contacter l&apos;API : {error}
+        </div>
+      )}
 
       {/* Filtres */}
       <div className="flex gap-2 mb-4 flex-wrap">
@@ -68,13 +85,16 @@ export default function DashboardPage() {
 
       {/* Liste des lignes */}
       <section className="flex flex-col gap-3">
-        {filtered.map((p) => (
+        {loading && (
+          <p className="text-center text-[--muted] text-sm py-12">Chargement…</p>
+        )}
+        {!loading && filtered.map((p) => (
           <LineCard key={p.line} prediction={p} />
         ))}
       </section>
 
       <footer className="mt-8 text-center text-xs text-[--muted]">
-        Données simulées — connexion API à venir
+        Actualisation automatique toutes les 2 minutes
       </footer>
     </main>
   );

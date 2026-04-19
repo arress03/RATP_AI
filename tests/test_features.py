@@ -1,12 +1,10 @@
 from datetime import datetime
 
 import polars as pl
-import pytest
 
 from src.features.target import build_line_status, build_target
 from src.features.temporal import add_temporal_features
-from src.features.traffic import add_lag_features, add_rolling_features
-
+from src.features.traffic import add_lag_features
 
 # ---------------------------------------------------------------------------
 # Helpers

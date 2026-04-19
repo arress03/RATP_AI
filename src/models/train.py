@@ -1,4 +1,7 @@
 import polars as pl
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 # ---------------------------------------------------------------------------
 # Features utilisees par tous les modeles — source unique de verite
@@ -69,3 +72,25 @@ def temporal_split(df: pl.DataFrame, train_ratio: float = 0.70, val_ratio: float
     print(f"  Taux positifs — train: {y_train.mean():.1%}  val: {y_val.mean():.1%}  test: {y_test.mean():.1%}")
 
     return X_train, X_val, X_test, y_train, y_val, y_test
+
+
+def train_baseline(X_train, y_train) -> Pipeline:
+    """
+    Logistic Regression avec class_weight='balanced' pour gerer le desequilibre.
+
+    Pipeline : StandardScaler -> LogisticRegression
+    Le scaler est indispensable pour la convergence de LR sur des features
+    d'echelles heterogenes (pct_delayed en 0-1, n_calls en dizaines).
+
+    Evalue sur le VAL set uniquement — le test set ne doit pas etre touche.
+    """
+    pipeline = Pipeline([
+        ("scaler", StandardScaler()),
+        ("clf", LogisticRegression(
+            class_weight="balanced",
+            max_iter=1000,
+            random_state=42,
+        )),
+    ])
+    pipeline.fit(X_train, y_train)
+    return pipeline

@@ -2,13 +2,14 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from src.db.models import MetroCall, Snapshot
 
 
 def _parse_dt(value: str | None) -> datetime | None:
-    """Parse une chaîne ISO 8601 en datetime aware UTC, ou None."""
+    """Parse une chaine ISO 8601 en datetime aware UTC, ou None."""
     if not value:
         return None
     dt = datetime.fromisoformat(value)
@@ -19,8 +20,9 @@ def _parse_dt(value: str | None) -> datetime | None:
 
 def import_snapshot(json_path: str | Path, session: Session) -> Snapshot | None:
     """
-    Lit un fichier JSON de snapshot et l'insère en base.
-    Retourne le Snapshot créé, ou None si déjà importé (déduplication sur fetched_at).
+    Lit un fichier JSON de snapshot et l'insere en base.
+    Retourne le Snapshot cree, ou None si deja importe (deduplication sur fetched_at).
+    Gere les doublons de timestamp (deux fichiers avec le meme fetched_at).
     """
     json_path = Path(json_path)
     with open(json_path, encoding="utf-8") as f:
@@ -28,7 +30,7 @@ def import_snapshot(json_path: str | Path, session: Session) -> Snapshot | None:
 
     fetched_at = _parse_dt(data["fetched_at"])
 
-    # Déduplication : on vérifie si ce fetched_at existe déjà
+    # Deduplication : on verifie si ce fetched_at existe deja en base
     existing = session.query(Snapshot).filter_by(fetched_at=fetched_at).first()
     if existing is not None:
         return None
@@ -41,7 +43,13 @@ def import_snapshot(json_path: str | Path, session: Session) -> Snapshot | None:
         raw_file_path=str(json_path.resolve()),
     )
     session.add(snapshot)
-    session.flush()  # obtenir snapshot.id avant d'insérer les calls
+
+    try:
+        session.flush()  # obtenir snapshot.id avant d'inserer les calls
+    except IntegrityError:
+        # Deux fichiers avec le meme fetched_at (race condition collecteur)
+        session.rollback()
+        return None
 
     for raw in raw_calls:
         call = MetroCall(
@@ -64,7 +72,7 @@ def import_all(raw_dir: str | Path, session: Session) -> tuple[int, int]:
     """
     Importe en batch tous les fichiers JSON du dossier raw_dir
     qui ne sont pas encore en base.
-    Retourne (nb_importés, nb_ignorés).
+    Retourne (nb_importes, nb_ignores).
     """
     raw_dir = Path(raw_dir)
     if not raw_dir.exists():
@@ -79,6 +87,5 @@ def import_all(raw_dir: str | Path, session: Session) -> tuple[int, int]:
             skipped += 1
         else:
             imported += 1
-            print(f"[import] {path.name} → {result.total_calls} appels")
 
     return imported, skipped

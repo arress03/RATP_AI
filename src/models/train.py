@@ -1,3 +1,4 @@
+import lightgbm as lgb
 import polars as pl
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
@@ -94,3 +95,41 @@ def train_baseline(X_train, y_train) -> Pipeline:
     ])
     pipeline.fit(X_train, y_train)
     return pipeline
+
+
+def train_lightgbm(X_train, y_train, X_val=None, y_val=None) -> lgb.LGBMClassifier:
+    """
+    LightGBM avec gestion du desequilibre et early stopping.
+
+    Parametres :
+    - is_unbalance=True     : ponderation automatique des classes
+    - early_stopping_rounds : arrete si pas d'amelioration sur le val set
+    - num_leaves=31         : complexite moderee, evite l'overfitting
+    - learning_rate=0.05    : apprentissage lent mais stable
+
+    Si X_val/y_val fournis, active l'early stopping sur le val set.
+    Evalue sur le VAL set uniquement — le test set ne doit pas etre touche.
+    """
+    model = lgb.LGBMClassifier(
+        n_estimators=1000,
+        num_leaves=31,
+        learning_rate=0.05,
+        is_unbalance=True,
+        random_state=42,
+        verbose=-1,
+    )
+
+    fit_params = {}
+    if X_val is not None and y_val is not None:
+        fit_params["eval_set"] = [(X_val, y_val)]
+        fit_params["callbacks"] = [
+            lgb.early_stopping(stopping_rounds=50, verbose=False),
+            lgb.log_evaluation(period=0),
+        ]
+
+    model.fit(X_train, y_train, **fit_params)
+
+    if X_val is not None:
+        print(f"  Meilleure iteration : {model.best_iteration_}")
+
+    return model

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LinePrediction, LINE_COLORS, getLineTextColor } from "@/lib/lines";
 import RiskBadge from "./RiskBadge";
 
@@ -11,7 +12,8 @@ export default function LineCard({ prediction }: Props) {
   const textColor = getLineTextColor(line);
 
   return (
-    <article className="flex items-center gap-4 rounded-xl p-4 bg-[--surface] border border-[--border] hover:border-[--accent] transition-colors">
+    <Link href={`/line/${encodeURIComponent(line)}`} className="block">
+    <article className="flex items-center gap-4 rounded-xl p-4 bg-[--surface] border border-[--border] hover:border-[--accent] transition-colors cursor-pointer">
       {/* Pastille ligne */}
       <div
         className="w-12 h-12 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm"
@@ -42,5 +44,6 @@ export default function LineCard({ prediction }: Props) {
         </div>
       </div>
     </article>
+    </Link>
   );
 }

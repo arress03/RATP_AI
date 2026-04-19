@@ -1,3 +1,4 @@
+import joblib
 import lightgbm as lgb
 import polars as pl
 from sklearn.linear_model import LogisticRegression
@@ -133,3 +134,21 @@ def train_lightgbm(X_train, y_train, X_val=None, y_val=None) -> lgb.LGBMClassifi
         print(f"  Meilleure iteration : {model.best_iteration_}")
 
     return model
+
+
+def save_model(model, path: str) -> None:
+    """Serialise le modele avec joblib."""
+    joblib.dump(model, path)
+    print(f"Modele sauvegarde -> {path}")
+
+
+def compare_models(results: list[dict]) -> pl.DataFrame:
+    """
+    Tableau comparatif des modeles trie par F1 decroissant.
+    Colonnes : model_name, precision, recall, f1, roc_auc.
+    """
+    return (
+        pl.DataFrame(results)
+        .select(["model_name", "precision", "recall", "f1", "roc_auc"])
+        .sort("f1", descending=True)
+    )

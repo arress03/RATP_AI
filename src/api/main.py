@@ -1,9 +1,11 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 import joblib
 import numpy as np
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 MODEL_PATH = Path("models/best_model.pkl")
@@ -25,6 +27,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="RATP AI", version="1.0.0", lifespan=lifespan)
+
+_raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+_origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
 
 
 class PredictRequest(BaseModel):
